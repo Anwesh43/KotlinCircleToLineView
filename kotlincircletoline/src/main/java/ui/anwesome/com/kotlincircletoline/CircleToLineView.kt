@@ -9,13 +9,14 @@ import android.view.*
 
 class CircleToLineView(ctx:Context):View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val renderer = CircleToLineRenderer(this)
     override fun onDraw(canvas:Canvas) {
-
+        renderer.render(canvas,paint)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                renderer.handleTap()
             }
         }
         return true
@@ -92,6 +93,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
                 val h = canvas.height.toFloat()
                 animator = CircleToLineAnimator(CircleToLineContainer(w,h),view)
             }
+            canvas.drawColor(Color.parseColor("#212121"))
             animator?.draw(canvas,paint)
             animator?.update()
             time++
