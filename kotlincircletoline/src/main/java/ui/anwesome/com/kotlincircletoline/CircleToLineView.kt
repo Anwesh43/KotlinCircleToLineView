@@ -84,4 +84,20 @@ class CircleToLineView(ctx:Context):View(ctx) {
             }
         }
     }
+    data class CircleToLineRenderer(var view:CircleToLineView,var time:Int = 0) {
+        var animator:CircleToLineAnimator?=null
+        fun render(canvas:Canvas,paint:Paint) {
+            if(time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                animator = CircleToLineAnimator(CircleToLineContainer(w,h),view)
+            }
+            animator?.draw(canvas,paint)
+            animator?.update()
+            time++
+        }
+        fun handleTap() {
+            animator?.startUpdating()
+        }
+    }
 }
