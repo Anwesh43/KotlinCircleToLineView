@@ -11,8 +11,12 @@ import android.view.*
 class CircleToLineView(ctx:Context):View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = CircleToLineRenderer(this)
+    var circleToLineListener:CircleToLineListener?=null
     override fun onDraw(canvas:Canvas) {
         renderer.render(canvas,paint)
+    }
+    fun addCircleToLineListener(onLine:()->Unit,onCircle:()->Unit) {
+        circleToLineListener = CircleToLineListener(onLine,onCircle)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
@@ -25,7 +29,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
     data class CircleToLine(var x:Float,var y:Float,var r:Float) {
         fun draw(canvas:Canvas,paint:Paint,scale:Float) {
             paint.style = Paint.Style.STROKE
-            paint.strokeWidth = r/15
+            paint.strokeWidth = r/7
             paint.color = Color.parseColor("#1A237E")
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawArc(RectF(x-r,y-r,x+r,y+r),360*scale,360*(1-scale),false,paint)
@@ -50,7 +54,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
     data class CircleToLineContainer(var w:Float,var h:Float) {
         val r = Math.min(w,h)/10
         var circleToLine = CircleToLine(w/60+r,h/2,r)
-        var lineIndicator = LineIndicator(w/60+r,4*h/5,(2*Math.PI*r).toFloat())
+        var lineIndicator = LineIndicator(w/60+2*r,4*h/5,(2*Math.PI*r).toFloat())
         val state = CircleToLineState()
         fun draw(canvas:Canvas,paint:Paint) {
             circleToLine.draw(canvas,paint,state.scale)
@@ -67,8 +71,12 @@ class CircleToLineView(ctx:Context):View(ctx) {
         var animated = false
         fun update() {
             if(animated) {
-                container.update{
+                container.update{ scale ->
                     animated = false
+                    when(scale) {
+                        0f -> view.circleToLineListener?.onCircle?.invoke()
+                        1f -> view.circleToLineListener?.onLine?.invoke()
+                    }
                 }
                 try {
                     Thread.sleep(50)
@@ -116,6 +124,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
             animator?.startUpdating()
         }
     }
+    data class CircleToLineListener(var onLine:()->Unit,var onCircle:()->Unit)
     companion object {
         fun create(activity:Activity):CircleToLineView {
             val view = CircleToLineView(activity)
