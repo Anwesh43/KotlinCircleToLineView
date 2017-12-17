@@ -3,6 +3,7 @@ package ui.anwesome.com.kotlincircletoline
 /**
  * Created by anweshmishra on 17/12/17.
  */
+import android.app.Activity
 import android.content.*
 import android.graphics.*
 import android.view.*
@@ -100,6 +101,13 @@ class CircleToLineView(ctx:Context):View(ctx) {
         }
         fun handleTap() {
             animator?.startUpdating()
+        }
+    }
+    companion object {
+        fun create(activity:Activity):CircleToLineView {
+            val view = CircleToLineView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
