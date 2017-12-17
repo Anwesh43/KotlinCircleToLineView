@@ -56,4 +56,32 @@ class CircleToLineView(ctx:Context):View(ctx) {
             state.startUpdating(startcb)
         }
     }
+    data class CircleToLineAnimator(var container:CircleToLineContainer,var view:CircleToLineView) {
+        var animated = false
+        fun update() {
+            if(animated) {
+                container.update{
+                    animated = false
+                }
+                try {
+                    Thread.sleep(50)
+                    view.invalidate()
+                }
+                catch(ex:Exception) {
+
+                }
+            }
+        }
+        fun draw(canvas:Canvas,paint:Paint) {
+            container.draw(canvas,paint)
+        }
+        fun startUpdating() {
+            if(!animated) {
+                container.startUpdating{
+                    animated = true
+                    view.postInvalidate()
+                }
+            }
+        }
+    }
 }
