@@ -43,4 +43,17 @@ class CircleToLineView(ctx:Context):View(ctx) {
             dir = 1f-2*scale
         }
     }
+    data class CircleToLineContainer(var w:Float,var h:Float) {
+        var circleToLine = CircleToLine(w/2,h/2,Math.min(w,h)/3)
+        val state = CircleToLineState()
+        fun draw(canvas:Canvas,paint:Paint) {
+            circleToLine.draw(canvas,paint,state.scale)
+        }
+        fun update(stopcb:(Float)->Unit) {
+            state.update(stopcb)
+        }
+        fun startUpdating(startcb:()->Unit) {
+            state.startUpdating(startcb)
+        }
+    }
 }
