@@ -26,6 +26,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
         fun draw(canvas:Canvas,paint:Paint,scale:Float) {
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = r/15
+            paint.color = Color.parseColor("#1A237E")
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawArc(RectF(x-r,y-r,x+r,y+r),360*scale,360*(1-scale),false,paint)
             canvas.drawLine(x+r,y,x+r+(2*Math.PI*r).toFloat()*scale,y,paint)
@@ -47,10 +48,13 @@ class CircleToLineView(ctx:Context):View(ctx) {
         }
     }
     data class CircleToLineContainer(var w:Float,var h:Float) {
-        var circleToLine = CircleToLine(w/60+Math.min(w,h)/10,h/2,Math.min(w,h)/10)
+        val r = Math.min(w,h)/10
+        var circleToLine = CircleToLine(w/60+r,h/2,r)
+        var lineIndicator = LineIndicator(w/60+r,4*h/5,(2*Math.PI*r).toFloat())
         val state = CircleToLineState()
         fun draw(canvas:Canvas,paint:Paint) {
             circleToLine.draw(canvas,paint,state.scale)
+            lineIndicator.draw(canvas,paint,state.scale)
         }
         fun update(stopcb:(Float)->Unit) {
             state.update(stopcb)
@@ -87,6 +91,14 @@ class CircleToLineView(ctx:Context):View(ctx) {
             }
         }
     }
+    data class LineIndicator(var x:Float,var y:Float,var size:Float) {
+        fun draw(canvas:Canvas,paint:Paint,scale:Float) {
+            paint.strokeWidth = size/30
+            paint.strokeCap = Paint.Cap.ROUND
+            paint.color = Color.parseColor("#00E676")
+            canvas.drawLine(x,y,x+size*scale,y,paint)
+        }
+    }
     data class CircleToLineRenderer(var view:CircleToLineView,var time:Int = 0) {
         var animator:CircleToLineAnimator?=null
         fun render(canvas:Canvas,paint:Paint) {
@@ -94,7 +106,6 @@ class CircleToLineView(ctx:Context):View(ctx) {
                 val w = canvas.width.toFloat()
                 val h = canvas.height.toFloat()
                 animator = CircleToLineAnimator(CircleToLineContainer(w,h),view)
-                paint.color = Color.parseColor("#1A237E")
             }
             canvas.drawColor(Color.parseColor("#212121"))
             animator?.draw(canvas,paint)
