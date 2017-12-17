@@ -28,7 +28,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
             paint.strokeWidth = r/15
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawArc(RectF(x-r,y-r,x+r,y+r),360*scale,360*(1-scale),false,paint)
-            canvas.drawLine(x+r,y,x+r+(2*Math.PI*r).toFloat(),y,paint)
+            canvas.drawLine(x+r,y,x+r+(2*Math.PI*r).toFloat()*scale,y,paint)
         }
     }
     data class CircleToLineState(var scale:Float = 0f,var dir:Float = 0f,var prevScale:Float = 0f) {
@@ -41,12 +41,13 @@ class CircleToLineView(ctx:Context):View(ctx) {
                 stopcb(scale)
             }
         }
-        fun startUpdating(stopcb:()->Unit) {
+        fun startUpdating(startcb:()->Unit) {
             dir = 1f-2*scale
+            startcb()
         }
     }
     data class CircleToLineContainer(var w:Float,var h:Float) {
-        var circleToLine = CircleToLine(w/2,h/2,Math.min(w,h)/3)
+        var circleToLine = CircleToLine(w/60+Math.min(w,h)/10,h/2,Math.min(w,h)/10)
         val state = CircleToLineState()
         fun draw(canvas:Canvas,paint:Paint) {
             circleToLine.draw(canvas,paint,state.scale)
@@ -93,6 +94,7 @@ class CircleToLineView(ctx:Context):View(ctx) {
                 val w = canvas.width.toFloat()
                 val h = canvas.height.toFloat()
                 animator = CircleToLineAnimator(CircleToLineContainer(w,h),view)
+                paint.color = Color.parseColor("#1A237E")
             }
             canvas.drawColor(Color.parseColor("#212121"))
             animator?.draw(canvas,paint)
