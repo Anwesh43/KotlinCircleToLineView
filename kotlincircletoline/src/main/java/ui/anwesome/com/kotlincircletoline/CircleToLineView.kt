@@ -20,4 +20,13 @@ class CircleToLineView(ctx:Context):View(ctx) {
         }
         return true
     }
+    data class CircleToLine(var x:Float,var y:Float,var r:Float) {
+        fun draw(canvas:Canvas,paint:Paint,scale:Float) {
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = r/15
+            paint.strokeCap = Paint.Cap.ROUND
+            canvas.drawArc(RectF(x-r,y-r,x+r,y+r),360*scale,360*(1-scale),false,paint)
+            canvas.drawLine(x+r,y,x+r+(2*Math.PI*r).toFloat(),y,paint)
+        }
+    }
 }
